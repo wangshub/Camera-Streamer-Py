@@ -21,8 +21,8 @@ def get_frame():
                b'Content-Type: text/plain\r\n\r\n' + img_string_data + b'\r\n')
 
 
-@app.route('/video')
-def calc():
+@app.route('/video_feed')
+def video_feed():
     return Response(get_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
