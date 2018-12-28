@@ -1,53 +1,35 @@
 #!/usr/bin/env python
 from flask import Flask, render_template, Response
-from flask import request
 import cv2
-import time
-import threading
-import time
+
 
 app = Flask(__name__)
 
 
 @app.route('/')
 def index():
-    """Video streaming home page."""
-    return render_template('index.html')
+    return Response(get_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-def gen():
-    """Video streaming generator function."""
+def get_frame():
+    camera_port = 0
+
+    ramp_frames = 100
+
+    camera = cv2.VideoCapture(camera_port)  # this makes a web cam object
+
     while True:
-        # ret, frame = camera.read()
-        # cv2.imwrite('temp.jpg', frame)
+        ret, im = camera.read()
+        img_encode = cv2.imencode('.jpg', im)[1]
+        img_string_data = img_encode.tostring()
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + open('temp.jpg', 'rb').read() + b'\r\n')
+               b'Content-Type: text/plain\r\n\r\n' + img_string_data + b'\r\n')
 
 
-@app.route('/video_feed')
-def video_feed():
-    """Video streaming route. Put this in the src attribute of an img tag."""
-    print('visitor ip:', request.remote_addr)
-    return Response(gen(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-def camera_loop():
-    camera = cv2.VideoCapture(0)
-    while True:
-        time.sleep(1)
-        print('open cv read frame')
-        ret, frame = camera.read()
-        cv2.imwrite('temp.jpg', frame)
+@app.route('/video')
+def calc():
+    return Response(get_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 if __name__ == '__main__':
-
-    camera_task = threading.Thread(target=camera_loop())
-    camera_task.start()
-
-    host = '0.0.0.0'
-    app.run(host=host, debug=True, threaded=True)
-
-
-
+    app.run(host='localhost', debug=True, threaded=True)
