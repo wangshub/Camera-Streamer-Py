@@ -1,5 +1,7 @@
 # Camera Streamer Py
 
+Cross-platform video streaming service based on Opencv and Flask，had been tested on MacOs, Windows and Linux.
+
 ## Demo
 
 ![](./pic/screenshot.gif)
