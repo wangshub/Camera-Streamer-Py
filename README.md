@@ -1,5 +1,9 @@
 # Camera Streamer Py
 
+## Demo
+
+![](./pic/screenshot.gif)
+
 ## Dependency
 
 - Python2 or Python3
