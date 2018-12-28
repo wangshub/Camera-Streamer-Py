@@ -4,7 +4,7 @@ import cv2
 import queue
 import threading
 
-q_camera_frame = queue.Queue(maxsize=10)
+QUEUE_CAMERA = queue.Queue(maxsize=10)
 
 app = Flask(__name__)
 
@@ -16,7 +16,7 @@ def index():
 
 def get_frame():
     while True:
-        img_string_data = q_camera_frame.get()
+        img_string_data = QUEUE_CAMERA.get()
         yield (b'--frame\r\n' 
                b'Content-Type: text/plain\r\n\r\n' + img_string_data + b'\r\n')
 
@@ -34,11 +34,12 @@ def video_loop():
             ret, im = camera.read()
             img_encode = cv2.imencode('.jpg', im)[1]
             img_string_data = img_encode.tostring()
-            q_camera_frame.put(img_string_data, block=True)
+            QUEUE_CAMERA.put(img_string_data, block=True)
         except Exception as err:
             print("Read camera error: ", err)
 
 
 if __name__ == '__main__':
     threading.Thread(target=video_loop).start()
-    app.run(host='localhost', debug=True, threaded=True)
+    host = '0.0.0.0'
+    app.run(host=host, debug=True, threaded=True)
