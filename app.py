@@ -2,7 +2,6 @@
 from flask import Flask, render_template, Response
 import cv2
 
-
 app = Flask(__name__)
 
 
@@ -12,17 +11,14 @@ def index():
 
 
 def get_frame():
+    # TODO: list all camera devices, default device is 0
     camera_port = 0
-
-    ramp_frames = 100
-
-    camera = cv2.VideoCapture(camera_port)  # this makes a web cam object
-
+    camera = cv2.VideoCapture(camera_port)
     while True:
         ret, im = camera.read()
         img_encode = cv2.imencode('.jpg', im)[1]
         img_string_data = img_encode.tostring()
-        yield (b'--frame\r\n'
+        yield (b'--frame\r\n' 
                b'Content-Type: text/plain\r\n\r\n' + img_string_data + b'\r\n')
 
 
