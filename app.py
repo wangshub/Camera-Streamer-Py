@@ -3,6 +3,7 @@ from flask import Flask, render_template, Response
 import cv2
 import queue
 import threading
+import time
 
 QUEUE_CAMERA = queue.Queue(maxsize=10)
 
@@ -16,8 +17,9 @@ def index():
 
 def get_frame():
     while True:
+        time.sleep(0.03)
         img_string_data = QUEUE_CAMERA.get()
-        yield (b'--frame\r\n' 
+        yield (b'--frame\r\n'
                b'Content-Type: text/plain\r\n\r\n' + img_string_data + b'\r\n')
 
 
@@ -30,6 +32,7 @@ def video_loop():
     camera_port = 0
     camera = cv2.VideoCapture(camera_port)
     while True:
+        time.sleep(0.03)
         try:
             ret, im = camera.read()
             img_encode = cv2.imencode('.jpg', im)[1]
